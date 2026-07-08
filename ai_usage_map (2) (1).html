@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수석교사의 AI 활용 지도</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --tl:#e1f5ee;--tm:#0f9e74;--td:#085041;--tb:#5dcaa5;
+  --pl:#eeedfe;--pm:#534ab7;--pd:#3c3489;--pb:#afa9ec;
+  --al:#faeeda;--am:#ba7517;--ad:#633806;--ab:#ef9f27;
+  --cl:#faece7;--cm:#993c1d;--cd:#4a1b0c;--cb:#f0997b;
+  --bg:#f8f7f4;--gt:#2c2c2a;--gs:#5f5e5a;
+  --sh:0 4px 24px rgba(0,0,0,.10);--r:14px;--rs:9px;
+}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--gt);min-height:100vh;padding:32px 16px 60px}
+header{text-align:center;margin-bottom:36px}
+.eyebrow{font-size:12px;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--tm);margin-bottom:8px}
+h1{font-size:clamp(22px,4vw,34px);font-weight:700;line-height:1.3}
+header p{margin-top:10px;font-size:14px;color:var(--gs)}
+
+/* 편집 모드 토글 */
+.edit-bar{display:flex;justify-content:center;margin-bottom:28px}
+.edit-toggle{background:#fff;border:1.5px solid #d3d1c7;border-radius:30px;padding:8px 20px;font-size:13px;font-family:'Noto Sans KR',sans-serif;font-weight:500;cursor:pointer;color:var(--gs);display:flex;align-items:center;gap:6px;transition:all .15s}
+.edit-toggle:hover{border-color:#999;color:var(--gt)}
+.edit-toggle.on{background:#2c2c2a;border-color:#2c2c2a;color:#fff}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:960px;margin:0 auto}
+@media(max-width:640px){.grid{grid-template-columns:1fr}}
+.zone{border-radius:var(--r);padding:22px 18px 18px;display:flex;flex-direction:column;gap:10px}
+.zt{font-size:15px;font-weight:700;margin-bottom:4px;text-align:center}
+.z1{background:var(--tl);border:1.5px solid var(--tb)}.z1 .zt{color:var(--td)}
+.z2{background:var(--pl);border:1.5px solid var(--pb)}.z2 .zt{color:var(--pd)}
+.z3{background:var(--al);border:1.5px solid var(--ab)}.z3 .zt{color:var(--ad)}
+.z4{background:var(--cl);border:1.5px solid var(--cb)}.z4 .zt{color:var(--cd)}
+.card{background:#fff;border-radius:var(--rs);padding:12px 14px;cursor:pointer;transition:transform .15s,box-shadow .15s;border:1.5px solid transparent;display:flex;align-items:center;gap:12px}
+.card:hover{transform:translateY(-2px);box-shadow:var(--sh)}
+.z1 .card:hover{border-color:var(--tb)}.z2 .card:hover{border-color:var(--pb)}
+.z3 .card:hover{border-color:var(--ab)}.z4 .card:hover{border-color:var(--cb)}
+.ci{font-size:24px;flex-shrink:0;width:36px;text-align:center}
+.ct h3{font-size:13px;font-weight:700;margin-bottom:2px}
+.ct p{font-size:11px;color:var(--gs);line-height:1.4}
+.z1 .ct h3{color:var(--td)}.z2 .ct h3{color:var(--pd)}
+.z3 .ct h3{color:var(--ad)}.z4 .ct h3{color:var(--cd)}
+
+/* 오버레이 */
+.overlay{display:none;position:fixed;inset:0;background:rgba(20,18,14,.5);z-index:100;align-items:center;justify-content:center;padding:16px}
+.overlay.open{display:flex}
+.popup{background:#fff;border-radius:20px;max-width:560px;width:100%;box-shadow:0 16px 56px rgba(0,0,0,.2);overflow:hidden;animation:pop .22s cubic-bezier(.34,1.56,.64,1);max-height:92vh;display:flex;flex-direction:column}
+@keyframes pop{from{transform:scale(.9);opacity:0}to{transform:scale(1);opacity:1}}
+
+/* 비주얼 헤더 */
+.pv{width:100%;height:180px;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+.pv img{width:100%;height:100%;object-fit:cover}
+.pv-placeholder{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.pv-emoji{font-size:64px;line-height:1;filter:drop-shadow(0 2px 8px rgba(0,0,0,.12))}
+.pv-zone{font-size:11px;font-weight:700;letter-spacing:.1em;opacity:.75}
+
+/* 편집 모드 이미지 입력 */
+.img-edit-bar{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.55);padding:8px 12px;display:none;gap:6px;align-items:center}
+.img-edit-bar.show{display:flex}
+.img-edit-bar input{flex:1;border:none;border-radius:6px;padding:6px 10px;font-size:12px;font-family:'Noto Sans KR',sans-serif;outline:none}
+.img-edit-bar button{background:#fff;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-family:'Noto Sans KR',sans-serif;font-weight:700;cursor:pointer;white-space:nowrap}
+
+/* 팝업 스크롤 본문 */
+.ps{overflow-y:auto;flex:1}
+.ph{padding:18px 22px 14px;border-bottom:1px solid #f0ede8}
+.tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.07em;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+.ph h2{font-size:18px;font-weight:700;line-height:1.3;color:var(--gt)}
+.ph .sub{font-size:13px;color:var(--gs);margin-top:4px}
+.pb2{padding:18px 22px}
+.desc{font-size:14px;line-height:1.85;color:#3d3d3a;margin-bottom:18px}
+.slabel{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gs);margin-bottom:8px}
+.exbox{border-radius:10px;padding:14px 16px;font-size:13px;line-height:1.75;color:#3d3d3a;margin-bottom:20px}
+
+/* 링크 목록 */
+.links-wrap{margin-bottom:4px}
+.links{display:flex;flex-direction:column;gap:8px;margin-bottom:10px}
+.litem{display:flex;align-items:center;gap:10px;padding:11px 15px;border-radius:10px;border:1.5px solid #e8e6e0;text-decoration:none;color:var(--gt);font-size:13px;font-weight:500;transition:background .13s,border-color .13s;position:relative}
+.litem:hover{background:#f8f7f4}
+.licon{font-size:18px;flex-shrink:0}
+.llabel{flex:1;line-height:1.3}
+.ldesc{font-size:11px;color:var(--gs);font-weight:400;margin-top:1px}
+.larrow{color:#b4b2a9;font-size:13px;flex-shrink:0}
+.ldel{display:none;position:absolute;right:10px;top:50%;transform:translateY(-50%);background:#fee2e2;border:none;border-radius:6px;padding:3px 8px;font-size:11px;cursor:pointer;color:#991b1b;font-weight:700}
+body.editing .ldel{display:block}
+body.editing .larrow{display:none}
+body.editing .litem{padding-right:56px}
+
+/* 링크 추가 폼 (편집 모드에서만) */
+.link-add-form{display:none;background:#f8f7f4;border-radius:12px;padding:14px;border:1.5px dashed #d3d1c7}
+body.editing .link-add-form{display:block}
+.laf-row{display:flex;gap:8px;margin-bottom:8px}
+.laf-row:last-child{margin-bottom:0}
+.laf-input{flex:1;border:1.5px solid #e0ddd5;border-radius:8px;padding:8px 12px;font-size:13px;font-family:'Noto Sans KR',sans-serif;outline:none;background:#fff;color:var(--gt)}
+.laf-input:focus{border-color:#999}
+.laf-input.icon-input{width:60px;flex:none;text-align:center;font-size:18px}
+.laf-add{border:none;border-radius:8px;padding:9px 18px;font-size:13px;font-family:'Noto Sans KR',sans-serif;font-weight:700;cursor:pointer;color:#fff;white-space:nowrap;transition:opacity .15s}
+.laf-add:hover{opacity:.85}
+.laf-hint{font-size:11px;color:var(--gs);margin-bottom:10px}
+
+/* 팝업 푸터 */
+.pf{padding:12px 22px 16px;display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid #f0ede8;flex-shrink:0}
+.nbtn{background:none;border:1.5px solid #d3d1c7;border-radius:8px;padding:8px 16px;font-size:13px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;color:var(--gs);transition:background .1s}
+.nbtn:hover{background:#f1efe8;color:var(--gt)}
+.cbtn{border:none;border-radius:8px;padding:8px 22px;font-size:13px;font-family:'Noto Sans KR',sans-serif;font-weight:700;cursor:pointer;color:#fff;transition:opacity .15s}
+.cbtn:hover{opacity:.85}
+footer{text-align:center;margin-top:36px;font-size:12px;color:#b4b2a9}
+
+/* 저장 토스트 */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(20px);background:#2c2c2a;color:#fff;padding:10px 22px;border-radius:30px;font-size:13px;font-weight:500;opacity:0;transition:all .3s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">오륙도중학교 수석교사</div>
+  <h1>수업 속 AI, 이렇게 씁니다</h1>
+  <p>각 항목을 클릭하면 실제 활용 사례와 관련 자료를 볼 수 있어요</p>
+</header>
+
+<div class="edit-bar">
+  <button class="edit-toggle" id="ET" onclick="toggleEdit()">✏️ 편집 모드 켜기</button>
+</div>
+
+<div class="grid">
+  <div class="zone z1">
+    <div class="zt">① 수업 설계 · 자료 제작</div>
+    <div class="card" onclick="open_(0)"><div class="ci">📋</div><div class="ct"><h3>학생 활동지 · 루브릭 설계</h3><p>ABC 행동기록, 성취기준 연계 수행평가</p></div></div>
+    <div class="card" onclick="open_(1)"><div class="ci">⚗️</div><div class="ct"><h3>탐구 · 실험 수업 설계</h3><p>전기분해 장치, 재결정 실험, 밀도 시연</p></div></div>
+    <div class="card" onclick="open_(2)"><div class="ci">🏆</div><div class="ct"><h3>단원 마무리 활동 구성</h3><p>밀도 월드컵 토론, 주기율표 독서수업</p></div></div>
+    <div class="card" onclick="open_(3)"><div class="ci">🔍</div><div class="ct"><h3>교과서 오류 · 내용 검토</h3><p>시각 자료 오류, '같은 양' 같은 모호 표현</p></div></div>
+    <div class="card" onclick="open_(4)"><div class="ci">🔬</div><div class="ct"><h3>과학-예술 융합 · 생태 수업</h3><p>현미경사진작가반, 생물다양성 3차시</p></div></div>
+    <div class="card" onclick="open_(5)"><div class="ci">💻</div><div class="ct"><h3>시험 문항 생성 도구 개발</h3><p>SciItem AI — 별책9 성취기준 기반</p></div></div>
+  </div>
+  <div class="zone z2">
+    <div class="zt">② 교사 전문성 지원</div>
+    <div class="card" onclick="open_(6)"><div class="ci">📝</div><div class="ct"><h3>신규교사 연수 자료 제작</h3><p>상호 인터뷰지, 도메인별 수업관찰지</p></div></div>
+    <div class="card" onclick="open_(7)"><div class="ci">👁️</div><div class="ct"><h3>수업관찰 · 동료코칭 설계</h3><p>수업관찰록 Google Form 구조화</p></div></div>
+    <div class="card" onclick="open_(8)"><div class="ci">🧠</div><div class="ct"><h3>학습과학 강의 자료</h3><p>강의식 수업 동료 대상 PPT 설계</p></div></div>
+    <div class="card" onclick="open_(9)"><div class="ci">📚</div><div class="ct"><h3>교사 독서 · 연구 모임 운영</h3><p>딱3일 독서모임, 과학교사연구회</p></div></div>
+    <div class="card" onclick="open_(10)"><div class="ci">💡</div><div class="ct"><h3>수업 철학 · 성찰 언어화</h3><p>'실패는 데이터' 프레임 등 핵심 통찰</p></div></div>
+    <div class="card" onclick="open_(11)"><div class="ci">📖</div><div class="ct"><h3>교육 독서 연계 사고 정리</h3><p>뇌과학, NVC, 동기이론 → 수업 적용</p></div></div>
+  </div>
+  <div class="zone z3">
+    <div class="zt">③ 문서 · 행정 처리</div>
+    <div class="card" onclick="open_(12)"><div class="ci">📄</div><div class="ct"><h3>HWPX · DOCX 문서 자동 생성</h3><p>공문, 교수학습과정안, 워크시트</p></div></div>
+    <div class="card" onclick="open_(13)"><div class="ci">✏️</div><div class="ct"><h3>학교생활기록부 특기사항 작성</h3><p>현미경사진작가반 학생 20명 개별 작성</p></div></div>
+    <div class="card" onclick="open_(14)"><div class="ci">📋</div><div class="ct"><h3>프로그램 신청 · 기안 문서</h3><p>디지털 기반 독서수업연구교사 신청</p></div></div>
+    <div class="card" onclick="open_(15)"><div class="ci">🖥️</div><div class="ct"><h3>PPTX 발표 자료 제작</h3><p>수업공개 10슬라이드, 연수 강의 덱</p></div></div>
+    <div class="card" onclick="open_(16)"><div class="ci">📗</div><div class="ct"><h3>워크북 · 학생 책자 제작</h3><p>진로연계교육, 현미경반 마무리 책자</p></div></div>
+  </div>
+  <div class="zone z4">
+    <div class="zt">④ 내용 연구 · 팩트체크</div>
+    <div class="card" onclick="open_(17)"><div class="ci">🏛️</div><div class="ct"><h3>과학사 · 내용 심화 탐구</h3><p>전기분해 역사, 주기율표, 화학어원</p></div></div>
+    <div class="card" onclick="open_(18)"><div class="ci">⚠️</div><div class="ct"><h3>AI 생성 정보 검증 · 팩트체크</h3><p>역사적 사실 학생 공유 전 반드시 확인</p></div></div>
+    <div class="card" onclick="open_(19)"><div class="ci">⚗️</div><div class="ct"><h3>실험 원리 · 교육학적 맥락 탐구</h3><p>NaOH vs Na₂SO₄ 교육적 선택 근거</p></div></div>
+    <div class="card" onclick="open_(20)"><div class="ci">🍳</div><div class="ct"><h3>과학 개념 → 실생활 스토리 연결</h3><p>요리과학, 환경생태, 사라진 스푼</p></div></div>
+    <div class="card" onclick="open_(21)"><div class="ci">💬</div><div class="ct"><h3>교육심리 · 소통 이론 연결</h3><p>NVC, 학습동기, 뇌과학 → 현장 적용</p></div></div>
+  </div>
+</div>
+<footer>오륙도중학교 수석교사 신혜 · 2024–2025</footer>
+
+<!-- 팝업 -->
+<div class="overlay" id="OV" onclick="bgClose(event)">
+  <div class="popup">
+    <div class="pv" id="PV">
+      <div class="img-edit-bar" id="IEB">
+        <input type="text" id="IMG_URL" placeholder="이미지 URL을 붙여넣으세요 (캔바 공유링크 등)">
+        <button onclick="applyImage()">적용</button>
+        <button onclick="clearImage()" style="background:#fee2e2;color:#991b1b">삭제</button>
+      </div>
+    </div>
+    <div class="ps">
+      <div class="ph">
+        <div class="tag" id="PT"></div>
+        <h2 id="PTI"></h2>
+        <div class="sub" id="PSU"></div>
+      </div>
+      <div class="pb2">
+        <div class="desc" id="PD"></div>
+        <div class="slabel">실제 활용 사례</div>
+        <div class="exbox" id="PE"></div>
+        <div class="links-wrap">
+          <div class="slabel" id="LL" style="display:none">관련 자료 바로가기</div>
+          <div class="links" id="PL"></div>
+          <!-- 링크 추가 폼 (편집 모드에서만 보임) -->
+          <div class="link-add-form" id="LAF">
+            <div class="laf-hint">➕ 새 링크 추가 — 캔바, 패들렛, 구글 드라이브 등 어떤 URL이든 OK</div>
+            <div class="laf-row">
+              <input class="laf-input icon-input" id="LAF_ICON" placeholder="🔗" maxlength="2">
+              <input class="laf-input" id="LAF_LABEL" placeholder="링크 이름 (예: 밀도 토론 캔바 자료)">
+            </div>
+            <div class="laf-row">
+              <input class="laf-input" id="LAF_URL" placeholder="URL (https://...)">
+              <button class="laf-add" id="LAF_BTN" onclick="addLink()">추가</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pf">
+      <button class="nbtn" onclick="nav(-1)">← 이전</button>
+      <button class="cbtn" id="CB" onclick="close_()">닫기</button>
+      <button class="nbtn" onclick="nav(1)">다음 →</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="TOAST"></div>
+
+<script>
+const BASE=[
+ {z:"① 수업 설계 · 자료 제작",c:"t",e:"📋",title:"학생 활동지 · 루브릭 설계",sub:"2022 개정 교육과정 성취기준 연계",
+  desc:"수행평가 루브릭, ABC 단계 행동기록표, 학생 활동지를 AI와 함께 설계했어요. 성취기준 코드를 주면 평가 기준안을 초안으로 만들고, 교육적 판단으로 수정·확정하는 방식으로 사용해요.",
+  ex:"📋 [9과01-02] 성취기준을 입력하고 3단계 행동기록 루브릭 초안을 받아 수정 → 실제 수행평가에 적용. 관찰 불가능한 내면 기술은 직접 삭제하는 과정에서 평가 설계 전문성이 더 명확해졌어요."},
+ {z:"① 수업 설계 · 자료 제작",c:"t",e:"⚗️",title:"탐구 · 실험 수업 설계",sub:"전기분해, 재결정, 밀도 계층병 시연",
+  desc:"실험 수업의 탐구 과정, 안전 유의사항, 결과 정리 양식까지 AI와 함께 설계해요. '왜 이 실험 재료를 쓰는지'에 대한 교육학적 근거를 탐구하는 과정이 수업 설명력을 높여줬어요.",
+  ex:"⚗️ 전기분해 실험에서 NaOH vs Na₂SO₄ 선택 근거를 AI와 탐구 → 교육적 장단점 비교 → '학생 안전'과 '이온 설명 용이성'을 기준으로 직접 판단 후 수업 적용."},
+ {z:"① 수업 설계 · 자료 제작",c:"t",e:"🏆",title:"단원 마무리 활동 구성",sub:"밀도 월드컵 토론, 주기율표 독서수업",
+  desc:"단원 마지막 시간을 의미 있게 마무리하는 활동을 AI와 설계해요. 학생들이 개념을 자기 언어로 설명하고 토론하는 활동 구조를 빠르게 초안으로 받고 학급 상황에 맞게 조정해요.",
+  ex:"🏆 '밀도 월드컵 토론' — 밀도 관련 개념·현상 카드를 토너먼트 방식으로 토론. AI가 토론 카드 16종과 진행 시나리오 초안 생성 → 교사가 학급 맥락에 맞게 편집."},
+ {z:"① 수업 설계 · 자료 제작",c:"t",e:"🔍",title:"교과서 오류 · 내용 검토",sub:"시각 자료 오류, 모호한 표현 점검",
+  desc:"교과서 그림이나 설명에서 부정확하거나 모호한 표현을 AI와 함께 점검해요. '같은 양'처럼 맥락에 따라 달라지는 표현이나 개념 오류를 사전에 파악해 수업에서 바로잡아요.",
+  ex:"🔍 '혼합물 분리' 단원 교과서 그림 검토 → '같은 양의 물질'이 부피 기준인지 질량 기준인지 모호함 발견 → AI와 함께 정확한 표현 탐색 → '교과서도 완벽하지 않다'는 과학적 태도 교육으로 연결."},
+ {z:"① 수업 설계 · 자료 제작",c:"t",e:"🔬",title:"과학-예술 융합 · 생태 수업",sub:"현미경사진작가반, 생물다양성 3차시",
+  desc:"현미경 사진 촬영 동아리 수업과 생태·환경 연구회 연계 수업을 설계할 때 AI를 활용해요. 예술적 감수성과 과학적 관찰이 만나는 수업 구조, 학생 안내 텍스트를 함께 만들었어요.",
+  ex:"🔬 현미경사진작가반 마무리 책자 — 학생 작품 해설, 활동 소감, 과학적 맥락 설명을 포함한 책자 전체 구성을 AI와 설계. 각 학생의 특성을 반영한 개별 글은 교사가 직접 작성."},
+ {z:"① 수업 설계 · 자료 제작",c:"t",e:"💻",title:"시험 문항 생성 도구 개발",sub:"SciItem AI — 별책9 성취기준 기반",
+  desc:"과학과 교육과정 성취기준(별책9)을 데이터베이스화하고, 이미지를 업로드하면 관련 문항을 자동 생성하는 웹앱을 AI와 함께 개발했어요.",
+  ex:"💻 SciItem AI: 실험 사진이나 그래프를 업로드하면 성취기준에 맞는 선택형·서술형 문항 초안이 자동 생성. 교사가 난이도와 의도를 수정해서 최종 완성."},
+ {z:"② 교사 전문성 지원",c:"p",e:"📝",title:"신규교사 연수 자료 제작",sub:"상호 인터뷰지, 도메인별 수업관찰지",
+  desc:"신규 교사들이 서로를 이해하고 수업을 관찰할 수 있도록 돕는 연수 자료를 AI와 만들었어요. 교과별 특성을 반영한 수업관찰지, 라포 형성을 위한 상호 인터뷰 질문지를 효율적으로 제작했어요.",
+  ex:"📝 신규교사 연수용 '우리 반 수업 탐험' 관찰지: 교과별 특성을 반영한 관찰 항목을 AI로 초안 작성 → 수석교사가 학교 맥락에 맞게 편집 → 인쇄 배포."},
+ {z:"② 교사 전문성 지원",c:"p",e:"👁️",title:"수업관찰 · 동료코칭 설계",sub:"수업관찰록 Google Form 구조화",
+  desc:"동료 교사의 수업을 관찰하고 의미 있는 피드백을 줄 수 있는 시스템을 AI와 함께 설계했어요. Google Form과 Sheet를 연동한 수업관찰록 구조, 고유 항목 코드 체계까지 함께 만들었어요.",
+  ex:"📊 수업관찰록 시스템: 관찰 항목별 고유 코드(예: T-Q1, S-R2) 부여 → Google Form 입력 → Sheet 자동 집계. AI가 코드 체계와 양식 초안 설계, 실제 운영은 교사 판단으로 조정."},
+ {z:"② 교사 전문성 지원",c:"p",e:"🧠",title:"학습과학 강의 자료",sub:"강의식 수업 동료 대상 PPT 설계",
+  desc:"강의 중심으로 수업하는 동료 교사들에게 학습과학(뇌과학, 인출 효과, 간격 학습 등)을 소개하는 강의 자료를 AI와 만들었어요. 설득이 아닌 공유의 톤으로, 현장에서 바로 쓸 수 있는 내용 중심으로 구성했어요.",
+  ex:"🧠 '우리 뇌는 이렇게 배워요' PPT: 인출 연습, 간격 효과, 정교화 전략을 각 1슬라이드로 정리. AI가 핵심 개념 요약·시각화 아이디어 제안, 교사가 현장 사례로 살 붙임."},
+ {z:"② 교사 전문성 지원",c:"p",e:"📚",title:"교사 독서 · 연구 모임 운영",sub:"딱3일 독서모임, 부산 과학교사연구회",
+  desc:"방학 중 교사 독서 모임과 과학교사연구회 운영에 AI를 활용해요. 토론 질문 설계, 모임 자료 정리, 발제문 초안을 AI와 함께 준비하면 모임의 질이 높아지고 준비 부담이 줄어요.",
+  ex:"📚 '딱3일 교육방법 독서모임': 도서 《교육의 뇌과학》 발제문 AI와 초안 작성 → 핵심 질문 5개 선정 → 실제 모임에서 자유 토론."},
+ {z:"② 교사 전문성 지원",c:"p",e:"💡",title:"수업 철학 · 성찰 언어화",sub:"'실패는 데이터' 프레임 등 핵심 통찰",
+  desc:"수업과 교육에 대한 생각을 언어로 정리할 때 AI를 대화 상대로 활용해요. 머릿속에 있던 개념이 명확한 언어로 정리되면, 동료 교사나 연수에서 더 설득력 있게 전달할 수 있어요.",
+  ex:"💡 서울 출장 기차 안에서 '실패는 결함이 아니라 데이터' 프레임을 AI와 대화하며 언어화. 이후 수업공개 후 성찰 나눔에서 교사들에게 이 표현으로 전달 → 반응이 좋았어요."},
+ {z:"② 교사 전문성 지원",c:"p",e:"📖",title:"교육 독서 연계 사고 정리",sub:"뇌과학, NVC, 동기이론 → 수업 적용",
+  desc:"교육 관련 책을 읽으며 얻은 인사이트를 수업 설계와 연결할 때 AI를 활용해요. '이 개념이 실생활에서 어떻게 보이는가?'를 AI와 탐구하면 이론이 실천으로 연결돼요.",
+  ex:"📖 《NVC》 독서 후 '수업 중 학생의 저항 반응을 NVC로 이해하면?' AI와 탐구 → 감정·욕구·요청 3단계 언어로 정리 → 교사 연수 자료에 사례로 포함."},
+ {z:"③ 문서 · 행정 처리",c:"a",e:"📄",title:"HWPX · DOCX 문서 자동 생성",sub:"공문, 교수학습과정안, 워크시트",
+  desc:"한글(HWPX) 문서 생성을 AI와 함께 자동화했어요. Claude에게 내용을 주면 실제로 다운로드 가능한 HWPX 파일로 만들어줘요. 공문 양식, 교수학습과정안, 워크시트까지 형식에 맞게 출력돼요.",
+  ex:"📄 전기분해 수업 교수학습과정안: 단원명·성취기준·수업 흐름을 입력 → AI가 HWPX 파일로 생성 → 학교 공식 양식에 맞게 바로 제출 가능. 작성 시간이 기존의 1/3로 줄었어요."},
+ {z:"③ 문서 · 행정 처리",c:"a",e:"✏️",title:"학교생활기록부 특기사항 작성",sub:"현미경사진작가반 학생 20명 개별 작성",
+  desc:"각 학생의 활동 특성을 반영한 생활기록부 특기사항을 AI와 함께 작성했어요. 학생별 특이사항 메모를 AI에 주면 초안을 만들어주고, 교사가 개별 상황에 맞게 수정·확정해요.",
+  ex:"✏️ 현미경사진작가반 20명 특기사항: 학생별 관찰 메모 → AI 초안 → 교사 수정. 20명 작성 시간이 3시간에서 1시간으로 단축."},
+ {z:"③ 문서 · 행정 처리",c:"a",e:"📋",title:"프로그램 신청 · 기안 문서",sub:"디지털 기반 독서수업연구교사 신청",
+  desc:"각종 프로그램 신청서와 기안 문서를 AI와 함께 작성해요. 핵심 내용과 방향을 정리해 주면 형식에 맞는 문서 초안이 빠르게 나와요.",
+  ex:"📋 디지털 기반 독서수업연구교사 신청: '물질의 구성·주기율표 단원, 《사라진 스푼》 연계'라는 방향 제시 → AI가 신청서 초안 작성 → 검토 후 제출."},
+ {z:"③ 문서 · 행정 처리",c:"a",e:"🖥️",title:"PPTX 발표 자료 제작",sub:"수업공개 10슬라이드, 연수 강의 덱",
+  desc:"수업공개와 교사 연수용 PPT를 AI와 함께 제작해요. 전달하고 싶은 내용과 흐름을 말하면 슬라이드 구성안이 나오고, 실제 다운로드 가능한 PPTX 파일로도 만들 수 있어요.",
+  ex:"🖥️ '거꾸로교실 10년, 수업 설계의 핵심 3가지'를 10슬라이드로. AI가 구성·내용 초안 → 교사가 실제 수업 사례 삽입 → 발표용 완성본."},
+ {z:"③ 문서 · 행정 처리",c:"a",e:"📗",title:"워크북 · 학생 책자 제작",sub:"진로연계교육, 현미경반 마무리 책자",
+  desc:"학생용 워크북과 마무리 책자를 AI와 함께 기획·제작해요. 목차 구성부터 각 페이지 내용까지 AI와 설계하면 훨씬 빠르게 완성도 있는 책자를 만들 수 있어요.",
+  ex:"📗 중고 전환기 진로연계교육 워크북: '나의 과학적 경험 탐색' 페이지 설계를 AI와 협업. 질문 설계 → 레이아웃 → 실제 인쇄 파일까지 AI 지원으로 제작."},
+ {z:"④ 내용 연구 · 팩트체크",c:"c",e:"🏛️",title:"과학사 · 내용 심화 탐구",sub:"전기분해 역사, 주기율표, 화학어원",
+  desc:"수업 내용과 관련된 과학사와 심화 내용을 AI와 함께 탐구해요. 교과서에는 없지만 학생들의 흥미를 끄는 이야기, 개념의 어원, 발견 역사를 찾아 수업의 깊이를 더해요.",
+  ex:"🔬 전기분해 수업 준비: 데이비, 패러데이의 전기분해 발견 역사를 AI와 탐구 → 수업 도입부 스토리로 활용. 단, AI가 생성한 역사 정보는 반드시 검증 후 사용."},
+ {z:"④ 내용 연구 · 팩트체크",c:"c",e:"⚠️",title:"AI 생성 정보 검증 · 팩트체크",sub:"역사적 사실 학생 공유 전 반드시 확인",
+  desc:"AI가 생성한 정보를 그대로 수업에 사용하지 않아요. 특히 역사적 사실, 연도, 인명, 실험 데이터는 반드시 원전이나 교과서와 대조해요. AI의 한계를 알고 비판적으로 활용하는 것이 핵심이에요.",
+  ex:"⚠️ AI가 알려준 역사적 사실을 수업에 쓰기 전 직접 확인. 학생들에게도 'AI도 틀릴 수 있다, 함께 확인하자'는 과학적 탐구 태도를 모델링."},
+ {z:"④ 내용 연구 · 팩트체크",c:"c",e:"⚗️",title:"실험 원리 · 교육학적 맥락 탐구",sub:"NaOH vs Na₂SO₄ 교육적 선택 근거",
+  desc:"실험 재료나 방법의 선택 근거를 AI와 함께 탐구해요. 과학적 이유뿐 아니라 교육적 의도(설명 용이성, 안전성, 학생 이해도)까지 함께 고려해요.",
+  ex:"⚗️ NaOH(강염기·위험)와 Na₂SO₄(안전·이온 설명 용이) 비교를 AI와 탐구 → 학교 환경과 학년 수준 고려 → Na₂SO₄ 선택 + 선택 이유를 학생에게 설명하는 교수법 설계."},
+ {z:"④ 내용 연구 · 팩트체크",c:"c",e:"🍳",title:"과학 개념 → 실생활 스토리 연결",sub:"요리과학, 환경생태, 《사라진 스푼》",
+  desc:"추상적인 과학 개념을 학생이 공감할 수 있는 실생활 이야기와 연결할 때 AI를 활용해요. '이 개념이 실생활에서 어떻게 보이는가?'를 AI와 탐구하면 수업 도입부가 살아나요.",
+  ex:"🍳 밀도 수업 도입: '왜 기름은 항상 물 위에 뜰까?' → 요리 상황으로 연결. 《사라진 스푼》 주기율표 이야기 → 원소의 실생활 용도와 연결. AI가 풍부한 사례 제안, 교사가 선별."},
+ {z:"④ 내용 연구 · 팩트체크",c:"c",e:"💬",title:"교육심리 · 소통 이론 연결",sub:"NVC, 학습동기, 뇌과학 → 현장 적용",
+  desc:"교육심리학과 소통 이론을 수업 현장에 적용하는 방법을 AI와 함께 탐구해요. 이론 개념을 알아도 현장 적용이 어려울 때, AI와 구체적인 상황을 시뮬레이션하면 실천 언어가 생겨요.",
+  ex:"💬 수업 중 '왜 이걸 배워요?'라는 학생 질문 → NVC 관점으로 분석 + 동기이론으로 해석 + 뇌과학적 설명 → 실제 답변 언어 설계. AI가 이론-실천 연결 파트너 역할."},
+];
+
+const C={
+ t:{tag:"#0f9e74",tagBg:"#e1f5ee",tagBd:"#5dcaa5",exBg:"#f0faf5",exBd:"#5dcaa5",btn:"#0f9e74",vis:"#c8ede0",vt:"#085041"},
+ p:{tag:"#534ab7",tagBg:"#eeedfe",tagBd:"#afa9ec",exBg:"#f4f3fe",exBd:"#afa9ec",btn:"#534ab7",vis:"#d8d5f8",vt:"#3c3489"},
+ a:{tag:"#ba7517",tagBg:"#faeeda",tagBd:"#ef9f27",exBg:"#fff8ec",exBd:"#ef9f27",btn:"#ba7517",vis:"#fce8b0",vt:"#633806"},
+ c:{tag:"#993c1d",tagBg:"#faece7",tagBd:"#f0997b",exBg:"#fff4f0",exBd:"#f0997b",btn:"#993c1d",vis:"#f8d0c0",vt:"#4a1b0c"},
+};
+
+// 브라우저 저장소에서 사용자 데이터 불러오기
+function loadSaved(){
+  try{ return JSON.parse(localStorage.getItem('aimap_data')||'{}'); }catch(e){return {};}
+}
+function saveAll(){
+  localStorage.setItem('aimap_data', JSON.stringify(saved));
+  toast("저장됐어요 ✓");
+}
+
+let saved = loadSaved(); // {0:{links:[],image:""}, 1:{...}, ...}
+let cur = 0;
+let editing = false;
+
+function getSaved(i){
+  if(!saved[i]) saved[i]={links:[],image:""};
+  return saved[i];
+}
+
+// 편집 모드 토글
+function toggleEdit(){
+  editing = !editing;
+  document.body.classList.toggle('editing', editing);
+  const btn = document.getElementById('ET');
+  btn.textContent = editing ? '✅ 편집 모드 끄기' : '✏️ 편집 모드 켜기';
+  btn.classList.toggle('on', editing);
+  // 이미지 편집 바 표시
+  document.getElementById('IEB').classList.toggle('show', editing);
+  if(editing) toast("편집 모드 켜짐 — 링크를 추가하고 이미지를 넣어보세요");
+}
+
+let cur_=0;
+function open_(i){cur_=i;render();document.getElementById('OV').classList.add('open');document.body.style.overflow='hidden'}
+function close_(){document.getElementById('OV').classList.remove('open');document.body.style.overflow=''}
+function nav(d){cur_=(cur_+d+BASE.length)%BASE.length;render();document.querySelector('.ps').scrollTop=0}
+function bgClose(e){if(e.target===document.getElementById('OV'))close_()}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape')close_();
+  if(e.key==='ArrowRight')nav(1);
+  if(e.key==='ArrowLeft')nav(-1);
+});
+
+function render(){
+  const d=BASE[cur_], c=C[d.c], sv=getSaved(cur_);
+  // 비주얼
+  const pv=document.getElementById('PV');
+  const ieb=document.getElementById('IEB');
+  if(sv.image){
+    // 이미지 있으면 표시, 편집바는 이미지 위에
+    pv.style.background='';
+    let imgEl = pv.querySelector('img');
+    if(!imgEl){pv.innerHTML='';imgEl=document.createElement('img');pv.appendChild(imgEl);}
+    imgEl.src=sv.image; imgEl.alt=d.title;
+    pv.appendChild(ieb);
+  } else {
+    pv.style.background=c.vis;
+    pv.innerHTML=`<div class="pv-placeholder">
+      <div class="pv-emoji">${d.e}</div>
+      <div class="pv-zone" style="color:${c.vt}">${d.z}</div>
+    </div>`;
+    pv.appendChild(ieb);
+  }
+  document.getElementById('IMG_URL').value=sv.image||'';
+  ieb.classList.toggle('show', editing);
+
+  // 태그·제목
+  const tag=document.getElementById('PT');
+  tag.textContent=d.z;
+  tag.style.cssText=`background:${c.tagBg};color:${c.tag};border:1px solid ${c.tagBd}`;
+  document.getElementById('PTI').textContent=d.title;
+  document.getElementById('PSU').textContent=d.sub;
+  document.getElementById('PD').textContent=d.desc;
+  const ex=document.getElementById('PE');
+  ex.textContent=d.ex;
+  ex.style.cssText=`background:${c.exBg};border:1px solid ${c.exBd}`;
+
+  // 링크
+  const ll=document.getElementById('LL'), pl=document.getElementById('PL');
+  const links=sv.links||[];
+  if(links.length>0){
+    ll.style.display='block';
+    pl.innerHTML=links.map((l,idx)=>`
+      <a class="litem" href="${l.url}" target="_blank" rel="noopener" style="border-color:${c.tagBd}" onclick="if(event.target.classList.contains('ldel'))event.preventDefault()">
+        <span class="licon">${l.icon||'🔗'}</span>
+        <span style="flex:1"><div class="llabel">${l.label}</div>${l.desc?`<div class="ldesc">${l.desc}</div>`:''}</span>
+        <span class="larrow">↗</span>
+        <button class="ldel" onclick="delLink(${idx});event.stopPropagation()">삭제</button>
+      </a>`).join('');
+  } else {
+    ll.style.display = editing ? 'block' : 'none';
+    if(editing) ll.textContent='관련 자료 바로가기';
+    pl.innerHTML='';
+  }
+
+  // 추가 폼 버튼 색
+  document.getElementById('LAF_BTN').style.background=c.btn;
+  document.getElementById('CB').style.background=c.btn;
+  // 입력값 초기화
+  document.getElementById('LAF_ICON').value='';
+  document.getElementById('LAF_LABEL').value='';
+  document.getElementById('LAF_URL').value='';
+}
+
+function addLink(){
+  const icon=document.getElementById('LAF_ICON').value.trim()||'🔗';
+  const label=document.getElementById('LAF_LABEL').value.trim();
+  const url=document.getElementById('LAF_URL').value.trim();
+  if(!label||!url){toast("이름과 URL을 모두 입력해주세요");return;}
+  if(!url.startsWith('http')){toast("URL은 https://로 시작해야 해요");return;}
+  const sv=getSaved(cur_);
+  sv.links.push({icon,label,url});
+  saveAll();
+  render();
+}
+
+function delLink(idx){
+  const sv=getSaved(cur_);
+  sv.links.splice(idx,1);
+  saveAll();
+  render();
+}
+
+function applyImage(){
+  const url=document.getElementById('IMG_URL').value.trim();
+  if(url&&!url.startsWith('http')){toast("URL은 https://로 시작해야 해요");return;}
+  getSaved(cur_).image=url;
+  saveAll();
+  render();
+}
+function clearImage(){
+  getSaved(cur_).image='';
+  saveAll();
+  render();
+}
+
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('TOAST');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+</script>
+</body>
+</html>
