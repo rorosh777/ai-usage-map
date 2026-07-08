@@ -40,10 +40,18 @@ header p{margin-top:10px;font-size:14px;color:var(--gs)}
 .z1 .card:hover{border-color:var(--tb)}.z2 .card:hover{border-color:var(--pb)}
 .z3 .card:hover{border-color:var(--ab)}.z4 .card:hover{border-color:var(--cb)}
 .ci{font-size:24px;flex-shrink:0;width:36px;text-align:center}
+.ct{flex:1}
 .ct h3{font-size:13px;font-weight:700;margin-bottom:2px}
 .ct p{font-size:11px;color:var(--gs);line-height:1.4}
 .z1 .ct h3{color:var(--td)}.z2 .ct h3{color:var(--pd)}
 .z3 .ct h3{color:var(--ad)}.z4 .ct h3{color:var(--cd)}
+/* 링크 뱃지 */
+.badge{display:none;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:20px;font-size:10px;font-weight:700;flex-shrink:0}
+.badge.show{display:flex}
+.z1 .badge{background:var(--tb);color:var(--td)}
+.z2 .badge{background:var(--pb);color:var(--pd)}
+.z3 .badge{background:var(--ab);color:var(--ad)}
+.z4 .badge{background:var(--cb);color:var(--cd)}
 
 /* 오버레이 */
 .overlay{display:none;position:fixed;inset:0;background:rgba(20,18,14,.5);z-index:100;align-items:center;justify-content:center;padding:16px}
@@ -128,37 +136,37 @@ footer{text-align:center;margin-top:36px;font-size:12px;color:#b4b2a9}
 <div class="grid">
   <div class="zone z1">
     <div class="zt">① 수업 설계 · 자료 제작</div>
-    <div class="card" onclick="open_(0)"><div class="ci">📋</div><div class="ct"><h3>학생 활동지 · 루브릭 설계</h3><p>ABC 행동기록, 성취기준 연계 수행평가</p></div></div>
-    <div class="card" onclick="open_(1)"><div class="ci">⚗️</div><div class="ct"><h3>탐구 · 실험 수업 설계</h3><p>전기분해 장치, 재결정 실험, 밀도 시연</p></div></div>
-    <div class="card" onclick="open_(2)"><div class="ci">🏆</div><div class="ct"><h3>단원 마무리 활동 구성</h3><p>밀도 월드컵 토론, 주기율표 독서수업</p></div></div>
-    <div class="card" onclick="open_(3)"><div class="ci">🔍</div><div class="ct"><h3>교과서 오류 · 내용 검토</h3><p>시각 자료 오류, '같은 양' 같은 모호 표현</p></div></div>
-    <div class="card" onclick="open_(4)"><div class="ci">🔬</div><div class="ct"><h3>과학-예술 융합 · 생태 수업</h3><p>현미경사진작가반, 생물다양성 3차시</p></div></div>
-    <div class="card" onclick="open_(5)"><div class="ci">💻</div><div class="ct"><h3>시험 문항 생성 도구 개발</h3><p>SciItem AI — 별책9 성취기준 기반</p></div></div>
+    <div class="card" id="card-0" onclick="open_(0)"><div class="ci">📋</div><div class="ct"><h3>학생 활동지 · 루브릭 설계</h3><p>ABC 행동기록, 성취기준 연계 수행평가</p></div><span class="badge" id="badge-0"></span></div>
+    <div class="card" id="card-1" onclick="open_(1)"><div class="ci">⚗️</div><div class="ct"><h3>탐구 · 실험 수업 설계</h3><p>전기분해 장치, 재결정 실험, 밀도 시연</p></div><span class="badge" id="badge-1"></span></div>
+    <div class="card" id="card-2" onclick="open_(2)"><div class="ci">🏆</div><div class="ct"><h3>단원 마무리 활동 구성</h3><p>밀도 월드컵 토론, 주기율표 독서수업</p></div><span class="badge" id="badge-2"></span></div>
+    <div class="card" id="card-3" onclick="open_(3)"><div class="ci">🔍</div><div class="ct"><h3>교과서 오류 · 내용 검토</h3><p>시각 자료 오류, '같은 양' 같은 모호 표현</p></div><span class="badge" id="badge-3"></span></div>
+    <div class="card" id="card-4" onclick="open_(4)"><div class="ci">🔬</div><div class="ct"><h3>과학-예술 융합 · 생태 수업</h3><p>현미경사진작가반, 생물다양성 3차시</p></div><span class="badge" id="badge-4"></span></div>
+    <div class="card" id="card-5" onclick="open_(5)"><div class="ci">💻</div><div class="ct"><h3>시험 문항 생성 도구 개발</h3><p>SciItem AI — 별책9 성취기준 기반</p></div><span class="badge" id="badge-5"></span></div>
   </div>
   <div class="zone z2">
     <div class="zt">② 교사 전문성 지원</div>
-    <div class="card" onclick="open_(6)"><div class="ci">📝</div><div class="ct"><h3>신규교사 연수 자료 제작</h3><p>상호 인터뷰지, 도메인별 수업관찰지</p></div></div>
-    <div class="card" onclick="open_(7)"><div class="ci">👁️</div><div class="ct"><h3>수업관찰 · 동료코칭 설계</h3><p>수업관찰록 Google Form 구조화</p></div></div>
-    <div class="card" onclick="open_(8)"><div class="ci">🧠</div><div class="ct"><h3>학습과학 강의 자료</h3><p>강의식 수업 동료 대상 PPT 설계</p></div></div>
-    <div class="card" onclick="open_(9)"><div class="ci">📚</div><div class="ct"><h3>교사 독서 · 연구 모임 운영</h3><p>딱3일 독서모임, 과학교사연구회</p></div></div>
-    <div class="card" onclick="open_(10)"><div class="ci">💡</div><div class="ct"><h3>수업 철학 · 성찰 언어화</h3><p>'실패는 데이터' 프레임 등 핵심 통찰</p></div></div>
-    <div class="card" onclick="open_(11)"><div class="ci">📖</div><div class="ct"><h3>교육 독서 연계 사고 정리</h3><p>뇌과학, NVC, 동기이론 → 수업 적용</p></div></div>
+    <div class="card" id="card-6" onclick="open_(6)"><div class="ci">📝</div><div class="ct"><h3>신규교사 연수 자료 제작</h3><p>상호 인터뷰지, 도메인별 수업관찰지</p></div><span class="badge" id="badge-6"></span></div>
+    <div class="card" id="card-7" onclick="open_(7)"><div class="ci">👁️</div><div class="ct"><h3>수업관찰 · 동료코칭 설계</h3><p>수업관찰록 Google Form 구조화</p></div><span class="badge" id="badge-7"></span></div>
+    <div class="card" id="card-8" onclick="open_(8)"><div class="ci">🧠</div><div class="ct"><h3>학습과학 강의 자료</h3><p>강의식 수업 동료 대상 PPT 설계</p></div><span class="badge" id="badge-8"></span></div>
+    <div class="card" id="card-9" onclick="open_(9)"><div class="ci">📚</div><div class="ct"><h3>교사 독서 · 연구 모임 운영</h3><p>딱3일 독서모임, 과학교사연구회</p></div><span class="badge" id="badge-9"></span></div>
+    <div class="card" id="card-10" onclick="open_(10)"><div class="ci">💡</div><div class="ct"><h3>수업 철학 · 성찰 언어화</h3><p>'실패는 데이터' 프레임 등 핵심 통찰</p></div><span class="badge" id="badge-10"></span></div>
+    <div class="card" id="card-11" onclick="open_(11)"><div class="ci">📖</div><div class="ct"><h3>교육 독서 연계 사고 정리</h3><p>뇌과학, NVC, 동기이론 → 수업 적용</p></div><span class="badge" id="badge-11"></span></div>
   </div>
   <div class="zone z3">
     <div class="zt">③ 문서 · 행정 처리</div>
-    <div class="card" onclick="open_(12)"><div class="ci">📄</div><div class="ct"><h3>HWPX · DOCX 문서 자동 생성</h3><p>공문, 교수학습과정안, 워크시트</p></div></div>
-    <div class="card" onclick="open_(13)"><div class="ci">✏️</div><div class="ct"><h3>학교생활기록부 특기사항 작성</h3><p>현미경사진작가반 학생 20명 개별 작성</p></div></div>
-    <div class="card" onclick="open_(14)"><div class="ci">📋</div><div class="ct"><h3>프로그램 신청 · 기안 문서</h3><p>디지털 기반 독서수업연구교사 신청</p></div></div>
-    <div class="card" onclick="open_(15)"><div class="ci">🖥️</div><div class="ct"><h3>PPTX 발표 자료 제작</h3><p>수업공개 10슬라이드, 연수 강의 덱</p></div></div>
-    <div class="card" onclick="open_(16)"><div class="ci">📗</div><div class="ct"><h3>워크북 · 학생 책자 제작</h3><p>진로연계교육, 현미경반 마무리 책자</p></div></div>
+    <div class="card" id="card-12" onclick="open_(12)"><div class="ci">📄</div><div class="ct"><h3>HWPX · DOCX 문서 자동 생성</h3><p>공문, 교수학습과정안, 워크시트</p></div><span class="badge" id="badge-12"></span></div>
+    <div class="card" id="card-13" onclick="open_(13)"><div class="ci">✏️</div><div class="ct"><h3>학교생활기록부 특기사항 작성</h3><p>현미경사진작가반 학생 20명 개별 작성</p></div><span class="badge" id="badge-13"></span></div>
+    <div class="card" id="card-14" onclick="open_(14)"><div class="ci">📋</div><div class="ct"><h3>프로그램 신청 · 기안 문서</h3><p>디지털 기반 독서수업연구교사 신청</p></div><span class="badge" id="badge-14"></span></div>
+    <div class="card" id="card-15" onclick="open_(15)"><div class="ci">🖥️</div><div class="ct"><h3>PPTX 발표 자료 제작</h3><p>수업공개 10슬라이드, 연수 강의 덱</p></div><span class="badge" id="badge-15"></span></div>
+    <div class="card" id="card-16" onclick="open_(16)"><div class="ci">📗</div><div class="ct"><h3>워크북 · 학생 책자 제작</h3><p>진로연계교육, 현미경반 마무리 책자</p></div><span class="badge" id="badge-16"></span></div>
   </div>
   <div class="zone z4">
     <div class="zt">④ 내용 연구 · 팩트체크</div>
-    <div class="card" onclick="open_(17)"><div class="ci">🏛️</div><div class="ct"><h3>과학사 · 내용 심화 탐구</h3><p>전기분해 역사, 주기율표, 화학어원</p></div></div>
-    <div class="card" onclick="open_(18)"><div class="ci">⚠️</div><div class="ct"><h3>AI 생성 정보 검증 · 팩트체크</h3><p>역사적 사실 학생 공유 전 반드시 확인</p></div></div>
-    <div class="card" onclick="open_(19)"><div class="ci">⚗️</div><div class="ct"><h3>실험 원리 · 교육학적 맥락 탐구</h3><p>NaOH vs Na₂SO₄ 교육적 선택 근거</p></div></div>
-    <div class="card" onclick="open_(20)"><div class="ci">🍳</div><div class="ct"><h3>과학 개념 → 실생활 스토리 연결</h3><p>요리과학, 환경생태, 사라진 스푼</p></div></div>
-    <div class="card" onclick="open_(21)"><div class="ci">💬</div><div class="ct"><h3>교육심리 · 소통 이론 연결</h3><p>NVC, 학습동기, 뇌과학 → 현장 적용</p></div></div>
+    <div class="card" id="card-17" onclick="open_(17)"><div class="ci">🏛️</div><div class="ct"><h3>과학사 · 내용 심화 탐구</h3><p>전기분해 역사, 주기율표, 화학어원</p></div><span class="badge" id="badge-17"></span></div>
+    <div class="card" id="card-18" onclick="open_(18)"><div class="ci">⚠️</div><div class="ct"><h3>AI 생성 정보 검증 · 팩트체크</h3><p>역사적 사실 학생 공유 전 반드시 확인</p></div><span class="badge" id="badge-18"></span></div>
+    <div class="card" id="card-19" onclick="open_(19)"><div class="ci">⚗️</div><div class="ct"><h3>실험 원리 · 교육학적 맥락 탐구</h3><p>NaOH vs Na₂SO₄ 교육적 선택 근거</p></div><span class="badge" id="badge-19"></span></div>
+    <div class="card" id="card-20" onclick="open_(20)"><div class="ci">🍳</div><div class="ct"><h3>과학 개념 → 실생활 스토리 연결</h3><p>요리과학, 환경생태, 사라진 스푼</p></div><span class="badge" id="badge-20"></span></div>
+    <div class="card" id="card-21" onclick="open_(21)"><div class="ci">💬</div><div class="ct"><h3>교육심리 · 소통 이론 연결</h3><p>NVC, 학습동기, 뇌과학 → 현장 적용</p></div><span class="badge" id="badge-21"></span></div>
   </div>
 </div>
 <footer>오륙도중학교 수석교사 신혜 · 2024–2025</footer>
@@ -288,18 +296,45 @@ const C={
  c:{tag:"#993c1d",tagBg:"#faece7",tagBd:"#f0997b",exBg:"#fff4f0",exBd:"#f0997b",btn:"#993c1d",vis:"#f8d0c0",vt:"#4a1b0c"},
 };
 
-// 브라우저 저장소에서 사용자 데이터 불러오기
+// 파일에 내장된 기본 데이터 (공유해도 링크가 보임)
+const BUILTIN={"0":{"links":[{"icon":"🔗","label":"수업디자인 생성기","url":"https://gemini.google.com/share/078d5d715f52"},{"icon":"🔗","label":"수업디자인 생성기 프롬프트 등(오륙도중 온라인 수석실)","url":"https://padlet.com/rorosh777_1/2026-t4gxw6c6d94v0zw9"}],"image":""},"1":{"links":[],"image":""},"2":{"links":[{"icon":"🔗","label":"물질의 특성 단원 마무리 활동 채팅창","url":"https://claude.ai/share/bc1d0581-dc06-4fca-ba3a-a859e73e2577"},{"icon":"🔗","label":"단원 마무리 연결고리 만들기 ppt","url":"https://docs.google.com/presentation/d/1RGfKroh4VAHQreiRQcAOo8jvcsgLoPlT/edit?usp=drive_link&ouid=109037250608496113055&rtpof=true&sd=true"}],"image":""},"3":{"links":[],"image":""},"4":{"links":[{"icon":"🔗","label":"현미경 사진 작가반 2기 캔바 페이지","url":"https://canva.link/jmvx97kas9u6rj5"},{"icon":"🔗","label":"현미경 사진 작가반 프로세스(차시별 내용)","url":"https://docs.google.com/spreadsheets/d/1ldGDItjSQoatTAmHLbHRoJNxjDrarvV0fUyoGGu3jos/edit?gid=1958255383#gid=1958255383"}],"image":""},"5":{"links":[{"icon":"🔗","label":"과학과 문항 생성기","url":"https://gemini.google.com/share/8cfb4672a287"},{"icon":"🔗","label":"재과만 문항 생성기","url":"https://gemini.google.com/share/af00ea18306f"},{"icon":"🔗","label":"AI 문항 이미지 수정","url":"https://gemini.google.com/share/cc7bcce0bbdf"}],"image":""},"6":{"links":[{"icon":"🔗","label":"학생 문제행동 대응 기록부","url":"https://gemini.google.com/share/d0365795d427?skid=0a76e4f5-7eb8-49fa-8a07-a1458b9d2ef9"}],"image":""},"7":{"links":[{"icon":"🔗","label":"수업관찰록(오륙도 2025-1학기)","url":"https://drive.google.com/file/d/1i93Zds4O_uNwj-pXpwhi0RnJtZkWQKku/view?usp=drive_link"}],"image":""},"8":{"links":[],"image":""},"9":{"links":[{"icon":"🔗","label":"시즌제 아침 교사 모임","url":"https://docs.google.com/spreadsheets/d/10cYaL8SFdUm2V75vmTYYVan1fEEF8UNFmE9lT-KA1vw/edit?usp=sharing"}],"image":""},"10":{"links":[{"icon":"🔗","label":"<리마커블서비스> 중 Kano모델 '감동요인' 채팅","url":"https://chatgpt.com/share/6a474225-73f8-83ee-89d5-39a861e5fb63"}],"image":""},"11":{"links":[],"image":""},"12":{"links":[{"icon":"🔗","label":"채팅창_[교육실습]수업관찰 영역별 기록지 만들기","url":"https://claude.ai/share/58c8fcd8-998e-42a5-afaa-4c6e2d520469"},{"icon":"🔗","label":"2026 오륙도중 수업관찰록","url":"https://drive.google.com/file/d/1HhKiLFLXqvUvJkaa0aOYngiZeUFDStaM/view?usp=sharing"},{"icon":"🔗","label":"교육실습생용 영역별 수업관찰지","url":"https://drive.google.com/file/d/1fVCf8GBbkvmUZex7PjXm24QWykFWKtOh/view?usp=sharing"}],"image":""},"13":{"links":[],"image":""},"14":{"links":[{"icon":"🔗","label":"신청서 작성","url":"https://claude.ai/share/84b44b42-ddcf-47a4-85ad-2295676f07d1"}],"image":""},"15":{"links":[{"icon":"🔗","label":"수업소개자료(정리해두었던 글:카페, 블로그, 교내연수자료 등)","url":"https://drive.google.com/file/d/17aLBWWWSpwNhWtCHljTi0dFFT15XTWsC/view?usp=sharing"},{"icon":"🔗","label":"현미경사진전 프리젠테이션 자료","url":"https://drive.google.com/file/d/1vbKCG2Vylb9uuvrIElMIMji27Barib-9/view?usp=sharing"}],"image":""},"16":{"links":[],"image":""},"17":{"links":[],"image":""},"18":{"links":[],"image":""},"19":{"links":[],"image":""},"20":{"links":[],"image":""},"21":{"links":[{"icon":"🔗","label":"서비스는 '100-1=99'가 아니라 '100-1=0'이다.(<리마커블 서비스> 중)","url":"https://chatgpt.com/share/6a4b2c9b-6054-83ee-968d-2cd94952007e"}],"image":""}};
+
+// 브라우저 저장소 우선, 없으면 내장 데이터 사용
 function loadSaved(){
-  try{ return JSON.parse(localStorage.getItem('aimap_data')||'{}'); }catch(e){return {};}
+  try{
+    const local = JSON.parse(localStorage.getItem('aimap_data')||'null');
+    // localStorage에 데이터가 있으면 그걸 쓰고, 없으면 BUILTIN으로 초기화
+    if(local) return local;
+    localStorage.setItem('aimap_data', JSON.stringify(BUILTIN));
+    return JSON.parse(JSON.stringify(BUILTIN));
+  }catch(e){ return JSON.parse(JSON.stringify(BUILTIN)); }
 }
 function saveAll(){
   localStorage.setItem('aimap_data', JSON.stringify(saved));
+  updateAllBadges();
   toast("저장됐어요 ✓");
 }
+// 페이지 로드 시 뱃지 초기화
+window.addEventListener('DOMContentLoaded', updateAllBadges);
 
-let saved = loadSaved(); // {0:{links:[],image:""}, 1:{...}, ...}
+let saved = loadSaved();
 let cur = 0;
 let editing = false;
+
+function updateAllBadges(){
+  BASE.forEach((_,i)=>{
+    const el=document.getElementById('badge-'+i);
+    if(!el) return;
+    const count=(saved[i]?.links||[]).length;
+    if(count>0){
+      el.textContent='🔗 '+count;
+      el.classList.add('show');
+    } else {
+      el.textContent='';
+      el.classList.remove('show');
+    }
+  });
+}
 
 function getSaved(i){
   if(!saved[i]) saved[i]={links:[],image:""};
