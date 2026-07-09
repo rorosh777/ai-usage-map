@@ -299,11 +299,19 @@ const C={
 // 파일에 내장된 기본 데이터 (공유해도 링크가 보임)
 const BUILTIN={"0":{"links":[{"icon":"🔗","label":"수업디자인 생성기","url":"https://gemini.google.com/share/078d5d715f52"},{"icon":"🔗","label":"수업디자인 생성기 프롬프트 등(오륙도중 온라인 수석실)","url":"https://padlet.com/rorosh777_1/2026-t4gxw6c6d94v0zw9"}],"image":""},"1":{"links":[],"image":""},"2":{"links":[{"icon":"🔗","label":"물질의 특성 단원 마무리 활동 채팅창","url":"https://claude.ai/share/bc1d0581-dc06-4fca-ba3a-a859e73e2577"},{"icon":"🔗","label":"단원 마무리 연결고리 만들기 ppt","url":"https://docs.google.com/presentation/d/1RGfKroh4VAHQreiRQcAOo8jvcsgLoPlT/edit?usp=drive_link&ouid=109037250608496113055&rtpof=true&sd=true"}],"image":""},"3":{"links":[],"image":""},"4":{"links":[{"icon":"🔗","label":"현미경 사진 작가반 2기 캔바 페이지","url":"https://canva.link/jmvx97kas9u6rj5"},{"icon":"🔗","label":"현미경 사진 작가반 프로세스(차시별 내용)","url":"https://docs.google.com/spreadsheets/d/1ldGDItjSQoatTAmHLbHRoJNxjDrarvV0fUyoGGu3jos/edit?gid=1958255383#gid=1958255383"}],"image":""},"5":{"links":[{"icon":"🔗","label":"과학과 문항 생성기","url":"https://gemini.google.com/share/8cfb4672a287"},{"icon":"🔗","label":"재과만 문항 생성기","url":"https://gemini.google.com/share/af00ea18306f"},{"icon":"🔗","label":"AI 문항 이미지 수정","url":"https://gemini.google.com/share/cc7bcce0bbdf"}],"image":""},"6":{"links":[{"icon":"🔗","label":"학생 문제행동 대응 기록부","url":"https://gemini.google.com/share/459abf53b9c2?skid=420c5dfc-4b8b-4489-9696-788ce5ddc0a1"}],"image":""},"7":{"links":[{"icon":"🔗","label":"수업관찰록(오륙도 2025-1학기)","url":"https://drive.google.com/file/d/1i93Zds4O_uNwj-pXpwhi0RnJtZkWQKku/view?usp=drive_link"}],"image":""},"8":{"links":[],"image":""},"9":{"links":[{"icon":"🔗","label":"시즌제 아침 교사 모임","url":"https://docs.google.com/spreadsheets/d/10cYaL8SFdUm2V75vmTYYVan1fEEF8UNFmE9lT-KA1vw/edit?usp=sharing"}],"image":""},"10":{"links":[{"icon":"🔗","label":"<리마커블서비스> 중 Kano모델 '감동요인' 채팅","url":"https://chatgpt.com/share/6a474225-73f8-83ee-89d5-39a861e5fb63"}],"image":""},"11":{"links":[],"image":""},"12":{"links":[{"icon":"🔗","label":"채팅창_[교육실습]수업관찰 영역별 기록지 만들기","url":"https://claude.ai/share/58c8fcd8-998e-42a5-afaa-4c6e2d520469"},{"icon":"🔗","label":"2026 오륙도중 수업관찰록","url":"https://drive.google.com/file/d/1HhKiLFLXqvUvJkaa0aOYngiZeUFDStaM/view?usp=sharing"},{"icon":"🔗","label":"교육실습생용 영역별 수업관찰지","url":"https://drive.google.com/file/d/1fVCf8GBbkvmUZex7PjXm24QWykFWKtOh/view?usp=sharing"}],"image":""},"13":{"links":[],"image":""},"14":{"links":[{"icon":"🔗","label":"신청서 작성","url":"https://claude.ai/share/84b44b42-ddcf-47a4-85ad-2295676f07d1"}],"image":""},"15":{"links":[{"icon":"🔗","label":"수업소개자료(정리해두었던 글:카페, 블로그, 교내연수자료 등)","url":"https://drive.google.com/file/d/17aLBWWWSpwNhWtCHljTi0dFFT15XTWsC/view?usp=sharing"},{"icon":"🔗","label":"현미경사진전 프리젠테이션 자료","url":"https://drive.google.com/file/d/1vbKCG2Vylb9uuvrIElMIMji27Barib-9/view?usp=sharing"}],"image":""},"16":{"links":[],"image":""},"17":{"links":[],"image":""},"18":{"links":[],"image":""},"19":{"links":[],"image":""},"20":{"links":[],"image":""},"21":{"links":[{"icon":"🔗","label":"서비스는 '100-1=99'가 아니라 '100-1=0'이다.(<리마커블 서비스> 중)","url":"https://chatgpt.com/share/6a4b2c9b-6054-83ee-968d-2cd94952007e"},{"icon":"🔗","label":"비언어적 대화기술 진단","url":"https://gemini.google.com/share/d496cf712c3d?skid=b8c0d3e3-c9b6-4440-bc94-68a7a402223d"}],"image":""}};
 
+// 파일 버전 — 링크 데이터 바뀔 때마다 숫자 올리면 자동 초기화됨
+const DATA_VERSION = '2026-07-10';
+
 // 브라우저 저장소 우선, 없으면 내장 데이터 사용
 function loadSaved(){
   try{
+    // 버전 체크 — 버전 다르면 localStorage 초기화
+    const savedVersion = localStorage.getItem('aimap_version');
+    if(savedVersion !== DATA_VERSION){
+      localStorage.removeItem('aimap_data');
+      localStorage.setItem('aimap_version', DATA_VERSION);
+    }
     const local = JSON.parse(localStorage.getItem('aimap_data')||'null');
-    // localStorage에 데이터가 있으면 그걸 쓰고, 없으면 BUILTIN으로 초기화
     if(local) return local;
     localStorage.setItem('aimap_data', JSON.stringify(BUILTIN));
     return JSON.parse(JSON.stringify(BUILTIN));
