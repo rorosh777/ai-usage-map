@@ -105,6 +105,11 @@
     min-height: 52px;
   }
   .contact-btn:active { background: #f0f0f0; }
+  .contact-btn.highlight {
+    background: #fef3c7;
+    border-color: #f5d476;
+  }
+  .contact-btn.highlight:active { background: #fce8a8; }
   .contact-name {
     font-size: 15px;
     font-weight: 700;
@@ -298,6 +303,10 @@
     { name: "강봉석", group: "교무", dept: "방과후예체부", sub: "야간", phone: "010-9668-3776" },
     { name: "김향수", group: "교무", dept: "방과후예체부", sub: "미화", phone: "010-6758-2299" },
 
+    // 파견 (소속 불명확 - 교무 계열 끝에 배치, 음영 표시)
+    { name: "손현경", group: "교무", dept: "파견", sub: "파견", phone: "010-9876-7040", highlight: true },
+    { name: "이영란", group: "교무", dept: "파견", sub: "파견", phone: "010-2203-1058", highlight: true },
+
     // ===== 행정 =====
     { name: "행정실", group: "행정", dept: "학교 대표번호", sub: "대표전화", phone: "610-2884" },
     { name: "우성화", group: "행정", dept: "행정실", sub: "행정실장", phone: "010-6331-8903" },
@@ -309,11 +318,7 @@
     { name: "김삼순", group: "행정", dept: "행정실", sub: "조리사", phone: "010-9345-3204" },
     { name: "김정순", group: "행정", dept: "행정실", sub: "조리실무", phone: "010-2981-9209" },
     { name: "김향심", group: "행정", dept: "행정실", sub: "조리실무", phone: "010-4556-9624" },
-    { name: "장정윤", group: "행정", dept: "행정실", sub: "조리실무", phone: "010-3875-1117" },
-
-    // 파견 (소속 불명확 - 행정 계열 끝에 배치)
-    { name: "손현경", group: "행정", dept: "파견", sub: "파견", phone: "010-9876-7040" },
-    { name: "이영란", group: "행정", dept: "파견", sub: "파견", phone: "010-2203-1058" }
+    { name: "장정윤", group: "행정", dept: "행정실", sub: "조리실무", phone: "010-3875-1117" }
   ];
 /* ========================================================= */
 
@@ -353,7 +358,7 @@ function render(list) {
 
     items.forEach(c => {
       const btn = document.createElement('div');
-      btn.className = 'contact-btn';
+      btn.className = 'contact-btn' + (c.highlight ? ' highlight' : '');
       const subHtml = c.sub ? `<div class="contact-sub">${escapeHtml(c.sub)}</div>` : '';
       btn.innerHTML = `<div class="contact-name">${escapeHtml(c.name)}</div>${subHtml}`;
       btn.addEventListener('click', () => openSheet(c));
