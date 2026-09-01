@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>오륙도 연락망</title>
+
+<!-- PWA: 홈 화면 아이콘 & 전체화면 앱처럼 열리게 하는 설정 -->
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+<meta name="theme-color" content="#2b6cb0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="오륙도연락망">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+  :root {
+    --bg: #f5f6f8;
+    --card-bg: #ffffff;
+    --accent: #2b6cb0;
+    --accent-dark: #1a4971;
+    --text: #1a1a1a;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --danger-bg: #16a34a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+  header {
+    padding: 18px 16px 12px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  header h1 {
+    margin: 0 0 10px;
+    font-size: 19px;
+  }
+  #searchBox {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 15px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+  }
+  #searchBox:focus { border-color: var(--accent); }
+
+  main {
+    padding: 12px;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .dept-group { margin-bottom: 18px; }
+  .dept-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    margin: 4px 4px 8px;
+    letter-spacing: 0.02em;
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 10px;
+  }
+
+  .contact-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.08s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-height: 76px;
+    justify-content: center;
+  }
+  .contact-btn:active {
+    transform: scale(0.96);
+    box-shadow: inset 0 0 0 2px var(--accent);
+  }
+  .contact-name {
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .contact-role {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  #emptyMsg {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 0;
+    display: none;
+  }
+
+  /* 정보 카드 (바텀시트) */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 20;
+  }
+  .overlay.open { display: flex; }
+
+  .sheet {
+    background: var(--card-bg);
+    width: 100%;
+    max-width: 480px;
+    border-radius: 18px 18px 0 0;
+    padding: 22px 20px 28px;
+    animation: slideUp 0.18s ease-out;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .sheet-name {
+    font-size: 21px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .sheet-role {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 14px;
+  }
+  .sheet-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .sheet-row:last-of-type { border-bottom: none; }
+  .sheet-row .label { color: var(--muted); }
+
+  .call-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 18px;
+    padding: 15px;
+    background: var(--danger-bg);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .call-btn:active { opacity: 0.85; }
+
+  .close-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .no-phone-note {
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>📞 오륙도 연락망</h1>
+  <input id="searchBox" type="text" placeholder="이름 또는 업무로 검색">
+</header>
+
+<main id="mainArea"></main>
+<p id="emptyMsg">검색 결과가 없습니다.</p>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-name" id="sheetName"></div>
+    <div class="sheet-role" id="sheetRole"></div>
+    <div id="sheetDetails"></div>
+    <a href="#" id="callBtn" class="call-btn">☎️ 전화 걸기</a>
+    <div class="no-phone-note" id="noPhoneNote" style="display:none;">등록된 전화번호가 없습니다.</div>
+    <button class="close-btn" onclick="closeSheet()">닫기</button>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   ★ 여기 CONTACTS 배열만 수정하면 됩니다 ★
+   - name  : 이름
+   - dept  : 부서/학년 (같은 dept끼리 묶여서 표시됨)
+   - role  : 업무 (예: "교무부장", "1학년 3반 담임")
+   - phone : 내선번호나 휴대폰 번호. 없으면 "" 로 비워두기
+   - note  : (선택) 업무 관련 추가 메모. 없으면 "" 로 비워두기
+   ========================================================= */
+  const CONTACTS = [
+    // 관리자
+    { name: "고문숙", dept: "관리자", role: "교장", phone: "010-5676-6979", note: "" },
+    { name: "오은미", dept: "관리자", role: "교감", phone: "010-4541-5327", note: "" },
+    { name: "우성화", dept: "관리자", role: "행정실장", phone: "010-6331-8903", note: "" },
+
+    // 학교 대표번호 (내선)
+    { name: "행정실", dept: "학교 대표번호", role: "대표전화", phone: "610-2884", note: "" },
+    { name: "교무실", dept: "학교 대표번호", role: "대표전화", phone: "610-2811", note: "" },
+    { name: "교장실", dept: "학교 대표번호", role: "대표전화", phone: "610-2800", note: "" },
+
+    // 수석교사
+    { name: "김신혜", dept: "수석교사", role: "수석교사", phone: "010-2708-7785", note: "" },
+
+    // 교무기획부
+    { name: "서경혜", dept: "교무기획부", role: "", phone: "010-4122-3315", note: "" },
+    { name: "조민영", dept: "교무기획부", role: "", phone: "010-9306-6064", note: "" },
+    { name: "김경희", dept: "교무기획부", role: "", phone: "010-5395-7851", note: "" },
+    { name: "손영주", dept: "교무기획부", role: "", phone: "010-4541-7912", note: "" },
+    { name: "변성은", dept: "교무기획부", role: "", phone: "010-2842-7307", note: "" },
+    { name: "신영화", dept: "교무기획부", role: "", phone: "010-2308-8506", note: "" },
+    { name: "최현경", dept: "교무기획부", role: "교육실무-교무1", phone: "010-6777-8109", note: "" },
+    { name: "김윤주", dept: "교무기획부", role: "교육실무-교무2", phone: "010-7614-5354", note: "" },
+    { name: "백보경", dept: "교무기획부", role: "미술지원강사", phone: "010-7104-0842", note: "" },
+
+    // 교육과정부
+    { name: "안정자", dept: "교육과정부", role: "", phone: "010-9235-7033", note: "" },
+    { name: "윤지영", dept: "교육과정부", role: "", phone: "010-4875-4885", note: "" },
+    { name: "최유진", dept: "교육과정부", role: "", phone: "010-3444-0211", note: "" },
+    { name: "구예진", dept: "교육과정부", role: "", phone: "010-9364-8399", note: "" },
+    { name: "김윤미", dept: "교육과정부", role: "", phone: "010-3262-0327", note: "" },
+
+    // 생활안전부
+    { name: "강현", dept: "생활안전부", role: "", phone: "010-9512-2017", note: "" },
+    { name: "오유리", dept: "생활안전부", role: "", phone: "010-4539-4287", note: "" },
+    { name: "신부용", dept: "생활안전부", role: "", phone: "010-9808-6003", note: "" },
+    { name: "정수현", dept: "생활안전부", role: "1학년부장", phone: "010-7764-2958", note: "" },
+    { name: "김계희", dept: "생활안전부", role: "2학년부장", phone: "010-3289-8783", note: "" },
+    { name: "강성배", dept: "생활안전부", role: "3학년부장", phone: "010-8917-0009", note: "" },
+    { name: "조성돈", dept: "생활안전부", role: "배움터지킴이", phone: "010-2577-7821", note: "" },
+    { name: "신태희", dept: "생활안전부", role: "학폭지원강사", phone: "010-2818-7565", note: "" },
+    { name: "김승은", dept: "생활안전부", role: "음악지원강사", phone: "010-5653-0800", note: "" },
+
+    // 디지털미래교육부
+    { name: "김정헌", dept: "디지털미래교육부", role: "", phone: "010-9306-3584", note: "" },
+    { name: "박지희", dept: "디지털미래교육부", role: "", phone: "010-2953-0584", note: "" },
+    { name: "이송헌", dept: "디지털미래교육부", role: "", phone: "010-7185-6906", note: "" },
+    { name: "이다감", dept: "디지털미래교육부", role: "교육실무-과학", phone: "010-3068-1793", note: "" },
+    { name: "백수안", dept: "디지털미래교육부", role: "정보지원강사", phone: "010-5658-4298", note: "" },
+    { name: "강동기", dept: "디지털미래교육부", role: "컴유지보수(월)", phone: "010-3587-3294", note: "" },
+
+    // 진로복지상담부
+    { name: "곽인경", dept: "진로복지상담부", role: "", phone: "010-7151-8295", note: "" },
+    { name: "오주희", dept: "진로복지상담부", role: "", phone: "010-8959-5519", note: "" },
+    { name: "임근희", dept: "진로복지상담부", role: "", phone: "010-2631-7715", note: "" },
+    { name: "황은정", dept: "진로복지상담부", role: "상담", phone: "010-4848-2488", note: "" },
+    { name: "장동희", dept: "진로복지상담부", role: "사서도우미", phone: "010-9706-2527", note: "" },
+    { name: "Welsh Saxon", dept: "진로복지상담부", role: "원어민", phone: "010-9428-9119", note: "" },
+
+    // 방과후예체부
+    { name: "이달님", dept: "방과후예체부", role: "", phone: "010-6552-5383", note: "" },
+    { name: "윤영호", dept: "방과후예체부", role: "", phone: "010-2361-0252", note: "" },
+    { name: "이홍석", dept: "방과후예체부", role: "", phone: "010-5109-2559", note: "" },
+    { name: "이민주", dept: "방과후예체부", role: "보건", phone: "010-2865-8108", note: "" },
+    { name: "신지영", dept: "방과후예체부", role: "무용지원강사", phone: "010-7765-1234", note: "" },
+    { name: "김경혜", dept: "방과후예체부", role: "조리실무", phone: "010-7749-6303", note: "" },
+    { name: "권당용", dept: "방과후예체부", role: "야간", phone: "010-7530-5351", note: "" },
+    { name: "강봉석", dept: "방과후예체부", role: "야간", phone: "010-9668-3776", note: "" },
+    { name: "김향수", dept: "방과후예체부", role: "미화", phone: "010-6758-2299", note: "" },
+
+    // 행정실
+    { name: "진우경", dept: "행정실", role: "회계", phone: "010-9342-7474", note: "" },
+    { name: "변기현", dept: "행정실", role: "인사", phone: "010-3321-3017", note: "" },
+    { name: "김현숙", dept: "행정실", role: "행정실무", phone: "010-5145-5791", note: "" },
+    { name: "송이수", dept: "행정실", role: "시설관리", phone: "010-3862-4043", note: "" },
+    { name: "양금미", dept: "행정실", role: "영양사", phone: "010-9412-9693", note: "" },
+    { name: "김삼순", dept: "행정실", role: "조리사", phone: "010-9345-3204", note: "" },
+    { name: "김정순", dept: "행정실", role: "조리실무", phone: "010-2981-9209", note: "" },
+    { name: "김향심", dept: "행정실", role: "조리실무", phone: "010-4556-9624", note: "" },
+    { name: "장정윤", dept: "행정실", role: "조리실무", phone: "010-3875-1117", note: "" },
+
+    // 파견 (표에서 특정 부서열에 속하지 않고 별도 강조되어 있던 인원)
+    { name: "손현경", dept: "파견", role: "파견", phone: "010-9876-7040", note: "" },
+    { name: "이영란", dept: "파견", role: "파견", phone: "010-2203-1058", note: "" }
+  ];
+/* ========================================================= */
+
+const mainArea = document.getElementById('mainArea');
+const emptyMsg = document.getElementById('emptyMsg');
+const searchBox = document.getElementById('searchBox');
+const overlay = document.getElementById('overlay');
+
+function render(list) {
+  mainArea.innerHTML = '';
+
+  if (list.length === 0) {
+    emptyMsg.style.display = 'block';
+    return;
+  }
+  emptyMsg.style.display = 'none';
+
+  // 부서별로 그룹핑
+  const groups = {};
+  list.forEach(c => {
+    if (!groups[c.dept]) groups[c.dept] = [];
+    groups[c.dept].push(c);
+  });
+
+  Object.keys(groups).forEach(dept => {
+    const groupDiv = document.createElement('div');
+    groupDiv.className = 'dept-group';
+
+    const title = document.createElement('div');
+    title.className = 'dept-title';
+    title.textContent = dept;
+    groupDiv.appendChild(title);
+
+    const grid = document.createElement('div');
+    grid.className = 'contact-grid';
+
+    groups[dept].forEach(c => {
+      const displayRole = c.role || c.dept;
+      const btn = document.createElement('div');
+      btn.className = 'contact-btn';
+      btn.innerHTML = `<div class="contact-name">${escapeHtml(c.name)}</div><div class="contact-role">${escapeHtml(displayRole)}</div>`;
+      btn.addEventListener('click', () => openSheet(c));
+      grid.appendChild(btn);
+    });
+
+    groupDiv.appendChild(grid);
+    mainArea.appendChild(groupDiv);
+  });
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function openSheet(c) {
+  document.getElementById('sheetName').textContent = c.name;
+  const roleText = c.role && c.role !== c.dept ? c.role + ' · ' + c.dept : c.dept;
+  document.getElementById('sheetRole').textContent = roleText;
+
+  const details = document.getElementById('sheetDetails');
+  details.innerHTML = '';
+  if (c.phone) {
+    details.innerHTML += `<div class="sheet-row"><span class="label">전화번호</span><span>${escapeHtml(c.phone)}</span></div>`;
+  }
+  if (c.note) {
+    details.innerHTML += `<div class="sheet-row"><span class="label">메모</span><span>${escapeHtml(c.note)}</span></div>`;
+  }
+
+  const callBtn = document.getElementById('callBtn');
+  const noPhoneNote = document.getElementById('noPhoneNote');
+  if (c.phone) {
+    callBtn.href = 'tel:' + c.phone.replace(/-/g, '');
+    callBtn.style.display = 'flex';
+    noPhoneNote.style.display = 'none';
+  } else {
+    callBtn.style.display = 'none';
+    noPhoneNote.style.display = 'block';
+  }
+
+  overlay.classList.add('open');
+}
+
+function closeSheet() {
+  overlay.classList.remove('open');
+}
+
+overlay.addEventListener('click', (e) => {
+  if (e.target === overlay) closeSheet();
+});
+
+searchBox.addEventListener('input', () => {
+  const q = searchBox.value.trim().toLowerCase();
+  if (!q) {
+    render(CONTACTS);
+    return;
+  }
+  const filtered = CONTACTS.filter(c =>
+    c.name.toLowerCase().includes(q) ||
+    c.role.toLowerCase().includes(q) ||
+    c.dept.toLowerCase().includes(q)
+  );
+  render(filtered);
+});
+
+render(CONTACTS);
+</script>
+
+</body>
+</html>
