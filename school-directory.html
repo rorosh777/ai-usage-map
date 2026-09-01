@@ -94,19 +94,30 @@
     background: var(--card-bg);
     border: 1px solid rgba(0,0,0,0.12);
     border-radius: 6px;
-    padding: 10px 4px;
+    padding: 8px 4px;
     text-align: center;
     cursor: pointer;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 46px;
+    gap: 2px;
+    min-height: 52px;
   }
   .contact-btn:active { background: #f0f0f0; }
   .contact-name {
     font-size: 15px;
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.15;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+  .contact-sub {
+    font-size: 10.5px;
+    color: var(--muted);
+    line-height: 1.15;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -218,89 +229,91 @@
 <script>
 /* =========================================================
    ★ 여기 CONTACTS 배열만 수정하면 됩니다 ★
-   group: "교무" 또는 "행정" (이 순서 그대로 화면에 두 블록으로 표시됨)
-   각 그룹 안에서는 배열에 적은 순서 그대로 나열됩니다 (직급/부서 순).
+   group : "교무" 또는 "행정" (표시 순서)
+   dept  : 소속 부서(탭하면 뜨는 상세정보에 표시)
+   sub   : 이름 아래 작게 표시되는 역할
+           - 비상연락망에 괄호 역할이 있던 사람 → 그 내용
+           - 없던 사람 → 2026.9 좌석배치도의 담당업무(과목 제외)
    ========================================================= */
   const CONTACTS = [
     // ===== 교무 =====
-    { name: "교장실", group: "교무", role: "대표전화", phone: "610-2800" },
-    { name: "교무실", group: "교무", role: "대표전화", phone: "610-2811" },
-    { name: "고문숙", group: "교무", role: "교장", phone: "010-5676-6979" },
-    { name: "오은미", group: "교무", role: "교감", phone: "010-4541-5327" },
-    { name: "김신혜", group: "교무", role: "수석교사", phone: "010-2708-7785" },
+    { name: "교무실", group: "교무", dept: "학교 대표번호", sub: "대표전화", phone: "610-2811" },
+    { name: "고문숙", group: "교무", dept: "관리자", sub: "교장", phone: "010-5676-6979" },
+    { name: "오은미", group: "교무", dept: "관리자", sub: "교감", phone: "010-4541-5327" },
+    { name: "김신혜", group: "교무", dept: "수석교사", sub: "수석교사", phone: "010-2708-7785" },
 
     // 교무기획부
-    { name: "서경혜", group: "교무", role: "교무기획부", phone: "010-4122-3315" },
-    { name: "조민영", group: "교무", role: "교무기획부", phone: "010-9306-6064" },
-    { name: "김경희", group: "교무", role: "교무기획부", phone: "010-5395-7851" },
-    { name: "손영주", group: "교무", role: "교무기획부", phone: "010-4541-7912" },
-    { name: "변성은", group: "교무", role: "교무기획부", phone: "010-2842-7307" },
-    { name: "신영화", group: "교무", role: "교무기획부", phone: "010-2308-8506" },
-    { name: "최현경", group: "교무", role: "교무기획부·교육실무-교무1", phone: "010-6777-8109" },
-    { name: "김윤주", group: "교무", role: "교무기획부·교육실무-교무2", phone: "010-7614-5354" },
-    { name: "백보경", group: "교무", role: "교무기획부·미술지원강사", phone: "010-7104-0842" },
+    { name: "서경혜", group: "교무", dept: "교무기획부", sub: "교무기획부장", phone: "010-4122-3315" },
+    { name: "조민영", group: "교무", dept: "교무기획부", sub: "교무기획1", phone: "010-9306-6064" },
+    { name: "김경희", group: "교무", dept: "교무기획부", sub: "교무기획2", phone: "010-5395-7851" },
+    { name: "손영주", group: "교무", dept: "교무기획부", sub: "학적", phone: "010-4541-7912" },
+    { name: "변성은", group: "교무", dept: "교무기획부", sub: "NEIS·생기부", phone: "010-2842-7307" },
+    { name: "신영화", group: "교무", dept: "교무기획부", sub: "일과", phone: "010-2308-8506" },
+    { name: "최현경", group: "교무", dept: "교무기획부", sub: "교육실무-교무1", phone: "010-6777-8109" },
+    { name: "김윤주", group: "교무", dept: "교무기획부", sub: "교육실무-교무2", phone: "010-7614-5354" },
+    { name: "백보경", group: "교무", dept: "교무기획부", sub: "미술지원강사", phone: "010-7104-0842" },
 
     // 교육과정부(연구부)
-    { name: "안정자", group: "교무", role: "교육과정부(연구부)", phone: "010-9235-7033" },
-    { name: "윤지영", group: "교무", role: "교육과정부(연구부)", phone: "010-4875-4885" },
-    { name: "최유진", group: "교무", role: "교육과정부(연구부)", phone: "010-3444-0211" },
-    { name: "구예진", group: "교무", role: "교육과정부(연구부)", phone: "010-9364-8399" },
-    { name: "김윤미", group: "교무", role: "교육과정부(연구부)", phone: "010-3262-0327" },
+    { name: "안정자", group: "교무", dept: "교육과정부(연구부)", sub: "교육과정부장", phone: "010-9235-7033" },
+    { name: "윤지영", group: "교무", dept: "교육과정부(연구부)", sub: "교육과정기획", phone: "010-4875-4885" },
+    { name: "최유진", group: "교무", dept: "교육과정부(연구부)", sub: "평가1", phone: "010-3444-0211" },
+    { name: "구예진", group: "교무", dept: "교육과정부(연구부)", sub: "평가2", phone: "010-9364-8399" },
+    { name: "김윤미", group: "교무", dept: "교육과정부(연구부)", sub: "평가3", phone: "010-3262-0327" },
 
     // 생활안전부
-    { name: "강현", group: "교무", role: "생활안전부", phone: "010-9512-2017" },
-    { name: "오유리", group: "교무", role: "생활안전부", phone: "010-4539-4287" },
-    { name: "신부용", group: "교무", role: "생활안전부", phone: "010-9808-6003" },
-    { name: "정수현", group: "교무", role: "생활안전부·1학년부장", phone: "010-7764-2958" },
-    { name: "김계희", group: "교무", role: "생활안전부·2학년부장", phone: "010-3289-8783" },
-    { name: "강성배", group: "교무", role: "생활안전부·3학년부장", phone: "010-8917-0009" },
-    { name: "조성돈", group: "교무", role: "생활안전부·배움터지킴이", phone: "010-2577-7821" },
-    { name: "신태희", group: "교무", role: "생활안전부·학폭지원강사", phone: "010-2818-7565" },
-    { name: "김승은", group: "교무", role: "생활안전부·음악지원강사", phone: "010-5653-0800" },
+    { name: "강현", group: "교무", dept: "생활안전부", sub: "생활안전부장", phone: "010-9512-2017" },
+    { name: "오유리", group: "교무", dept: "생활안전부", sub: "생활안전기획", phone: "010-4539-4287" },
+    { name: "신부용", group: "교무", dept: "생활안전부", sub: "교내", phone: "010-9808-6003" },
+    { name: "정수현", group: "교무", dept: "생활안전부", sub: "1학년부장", phone: "010-7764-2958" },
+    { name: "김계희", group: "교무", dept: "생활안전부", sub: "2학년부장", phone: "010-3289-8783" },
+    { name: "강성배", group: "교무", dept: "생활안전부", sub: "3학년부장", phone: "010-8917-0009" },
+    { name: "조성돈", group: "교무", dept: "생활안전부", sub: "배움터지킴이", phone: "010-2577-7821" },
+    { name: "신태희", group: "교무", dept: "생활안전부", sub: "학폭지원강사", phone: "010-2818-7565" },
+    { name: "김승은", group: "교무", dept: "생활안전부", sub: "음악지원강사", phone: "010-5653-0800" },
 
     // 디지털미래교육부
-    { name: "김정헌", group: "교무", role: "디지털미래교육부", phone: "010-9306-3584" },
-    { name: "박지희", group: "교무", role: "디지털미래교육부", phone: "010-2953-0584" },
-    { name: "이송헌", group: "교무", role: "디지털미래교육부", phone: "010-7185-6906" },
-    { name: "이다감", group: "교무", role: "디지털미래교육부·교육실무-과학", phone: "010-3068-1793" },
-    { name: "백수안", group: "교무", role: "디지털미래교육부·정보지원강사", phone: "010-5658-4298" },
-    { name: "강동기", group: "교무", role: "디지털미래교육부·컴유지보수(월)", phone: "010-3587-3294" },
+    { name: "김정헌", group: "교무", dept: "디지털미래교육부", sub: "디지털미래교육부장", phone: "010-9306-3584" },
+    { name: "박지희", group: "교무", dept: "디지털미래교육부", sub: "기획", phone: "010-2953-0584" },
+    { name: "이송헌", group: "교무", dept: "디지털미래교육부", sub: "정보", phone: "010-7185-6906" },
+    { name: "이다감", group: "교무", dept: "디지털미래교육부", sub: "교육실무-과학", phone: "010-3068-1793" },
+    { name: "백수안", group: "교무", dept: "디지털미래교육부", sub: "정보지원강사", phone: "010-5658-4298" },
+    { name: "강동기", group: "교무", dept: "디지털미래교육부", sub: "컴유지보수(월)", phone: "010-3587-3294" },
 
     // 진로복지상담부
-    { name: "곽인경", group: "교무", role: "진로복지상담부", phone: "010-7151-8295" },
-    { name: "오주희", group: "교무", role: "진로복지상담부", phone: "010-8959-5519" },
-    { name: "임근희", group: "교무", role: "진로복지상담부", phone: "010-2631-7715" },
-    { name: "황은정", group: "교무", role: "진로복지상담부·상담", phone: "010-4848-2488" },
-    { name: "장동희", group: "교무", role: "진로복지상담부·사서도우미", phone: "010-9706-2527" },
-    { name: "Welsh Saxon", group: "교무", role: "진로복지상담부·원어민", phone: "010-9428-9119" },
+    { name: "곽인경", group: "교무", dept: "진로복지상담부", sub: "", phone: "010-7151-8295" },
+    { name: "오주희", group: "교무", dept: "진로복지상담부", sub: "진로복지기획", phone: "010-8959-5519" },
+    { name: "임근희", group: "교무", dept: "진로복지상담부", sub: "인성교육", phone: "010-2631-7715" },
+    { name: "황은정", group: "교무", dept: "진로복지상담부", sub: "상담", phone: "010-4848-2488" },
+    { name: "장동희", group: "교무", dept: "진로복지상담부", sub: "사서도우미", phone: "010-9706-2527" },
+    { name: "Welsh Saxon", group: "교무", dept: "진로복지상담부", sub: "원어민", phone: "010-9428-9119" },
 
     // 방과후예체부
-    { name: "이달님", group: "교무", role: "방과후예체부", phone: "010-6552-5383" },
-    { name: "윤영호", group: "교무", role: "방과후예체부", phone: "010-2361-0252" },
-    { name: "이홍석", group: "교무", role: "방과후예체부", phone: "010-5109-2559" },
-    { name: "이민주", group: "교무", role: "방과후예체부·보건", phone: "010-2865-8108" },
-    { name: "신지영", group: "교무", role: "방과후예체부·무용지원강사", phone: "010-7765-1234" },
-    { name: "김경혜", group: "교무", role: "방과후예체부·조리실무", phone: "010-7749-6303" },
-    { name: "권당용", group: "교무", role: "방과후예체부·야간", phone: "010-7530-5351" },
-    { name: "강봉석", group: "교무", role: "방과후예체부·야간", phone: "010-9668-3776" },
-    { name: "김향수", group: "교무", role: "방과후예체부·미화", phone: "010-6758-2299" },
+    { name: "이달님", group: "교무", dept: "방과후예체부", sub: "방과후예체부장", phone: "010-6552-5383" },
+    { name: "윤영호", group: "교무", dept: "방과후예체부", sub: "방과후기획", phone: "010-2361-0252" },
+    { name: "이홍석", group: "교무", dept: "방과후예체부", sub: "체육교육", phone: "010-5109-2559" },
+    { name: "이민주", group: "교무", dept: "방과후예체부", sub: "보건", phone: "010-2865-8108" },
+    { name: "신지영", group: "교무", dept: "방과후예체부", sub: "무용지원강사", phone: "010-7765-1234" },
+    { name: "김경혜", group: "교무", dept: "방과후예체부", sub: "조리실무", phone: "010-7749-6303" },
+    { name: "권당용", group: "교무", dept: "방과후예체부", sub: "야간", phone: "010-7530-5351" },
+    { name: "강봉석", group: "교무", dept: "방과후예체부", sub: "야간", phone: "010-9668-3776" },
+    { name: "김향수", group: "교무", dept: "방과후예체부", sub: "미화", phone: "010-6758-2299" },
 
     // ===== 행정 =====
-    { name: "행정실", group: "행정", role: "대표전화", phone: "610-2884" },
-    { name: "우성화", group: "행정", role: "행정실장", phone: "010-6331-8903" },
-    { name: "진우경", group: "행정", role: "행정실·회계", phone: "010-9342-7474" },
-    { name: "변기현", group: "행정", role: "행정실·인사", phone: "010-3321-3017" },
-    { name: "김현숙", group: "행정", role: "행정실·행정실무", phone: "010-5145-5791" },
-    { name: "송이수", group: "행정", role: "행정실·시설관리", phone: "010-3862-4043" },
-    { name: "양금미", group: "행정", role: "행정실·영양사", phone: "010-9412-9693" },
-    { name: "김삼순", group: "행정", role: "행정실·조리사", phone: "010-9345-3204" },
-    { name: "김정순", group: "행정", role: "행정실·조리실무", phone: "010-2981-9209" },
-    { name: "김향심", group: "행정", role: "행정실·조리실무", phone: "010-4556-9624" },
-    { name: "장정윤", group: "행정", role: "행정실·조리실무", phone: "010-3875-1117" },
+    { name: "행정실", group: "행정", dept: "학교 대표번호", sub: "대표전화", phone: "610-2884" },
+    { name: "우성화", group: "행정", dept: "행정실", sub: "행정실장", phone: "010-6331-8903" },
+    { name: "진우경", group: "행정", dept: "행정실", sub: "회계", phone: "010-9342-7474" },
+    { name: "변기현", group: "행정", dept: "행정실", sub: "인사", phone: "010-3321-3017" },
+    { name: "김현숙", group: "행정", dept: "행정실", sub: "행정실무", phone: "010-5145-5791" },
+    { name: "송이수", group: "행정", dept: "행정실", sub: "시설관리", phone: "010-3862-4043" },
+    { name: "양금미", group: "행정", dept: "행정실", sub: "영양사", phone: "010-9412-9693" },
+    { name: "김삼순", group: "행정", dept: "행정실", sub: "조리사", phone: "010-9345-3204" },
+    { name: "김정순", group: "행정", dept: "행정실", sub: "조리실무", phone: "010-2981-9209" },
+    { name: "김향심", group: "행정", dept: "행정실", sub: "조리실무", phone: "010-4556-9624" },
+    { name: "장정윤", group: "행정", dept: "행정실", sub: "조리실무", phone: "010-3875-1117" },
 
-    // 파견 (소속 불명확 - 일단 행정 계열 끝에 배치)
-    { name: "손현경", group: "행정", role: "파견", phone: "010-9876-7040" },
-    { name: "이영란", group: "행정", role: "파견", phone: "010-2203-1058" }
+    // 파견 (소속 불명확 - 행정 계열 끝에 배치)
+    { name: "손현경", group: "행정", dept: "파견", sub: "파견", phone: "010-9876-7040" },
+    { name: "이영란", group: "행정", dept: "파견", sub: "파견", phone: "010-2203-1058" }
   ];
 /* ========================================================= */
 
@@ -341,7 +354,8 @@ function render(list) {
     items.forEach(c => {
       const btn = document.createElement('div');
       btn.className = 'contact-btn';
-      btn.innerHTML = `<div class="contact-name">${escapeHtml(c.name)}</div>`;
+      const subHtml = c.sub ? `<div class="contact-sub">${escapeHtml(c.sub)}</div>` : '';
+      btn.innerHTML = `<div class="contact-name">${escapeHtml(c.name)}</div>${subHtml}`;
       btn.addEventListener('click', () => openSheet(c));
       grid.appendChild(btn);
     });
@@ -353,7 +367,8 @@ function render(list) {
 
 function openSheet(c) {
   document.getElementById('sheetName').textContent = c.name;
-  document.getElementById('sheetRole').textContent = c.role + ' · ' + c.group;
+  const roleText = c.sub && c.sub !== c.dept ? c.sub + ' · ' + c.dept : c.dept;
+  document.getElementById('sheetRole').textContent = roleText;
 
   const details = document.getElementById('sheetDetails');
   details.innerHTML = '';
@@ -391,7 +406,8 @@ searchBox.addEventListener('input', () => {
   }
   const filtered = CONTACTS.filter(c =>
     c.name.toLowerCase().includes(q) ||
-    (c.role && c.role.toLowerCase().includes(q))
+    (c.sub && c.sub.toLowerCase().includes(q)) ||
+    c.dept.toLowerCase().includes(q)
   );
   render(filtered);
 });
